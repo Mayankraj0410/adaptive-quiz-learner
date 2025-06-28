@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/adaptive-quiz-learner
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+    networks:
+      - quiz-network
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - quiz-network
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH=false
+    networks:
+      - quiz-network
+
+volumes:
+  mongo-data:
+
+networks:
+  quiz-network:
+    driver: bridge

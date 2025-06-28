@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Quiz Learner</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar hidden">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>Adaptive Quiz Learner</span>
+            </div>
+            <div class="nav-menu">
+                <span id="userInfo" class="user-info"></span>
+                <button id="logoutBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Login Section -->
+        <section id="loginSection" class="auth-section">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h1>Adaptive Quiz Learner</h1>
+                    <p>Enter your email to get started with personalized learning!</p>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="Enter your email to get started">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        Get Started / Login
+                    </button>
+                    
+                    <div class="signup-info">
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            New users will be automatically registered. Existing users can login directly.
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- OTP Verification Section -->
+        <section id="otpSection" class="auth-section hidden">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h2>Verify OTP</h2>
+                    <p>Enter the 6-digit code sent to <span id="otpEmail"></span></p>
+                </div>
+                
+                <form id="otpForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="otp">One-Time Password</label>
+                        <input type="text" id="otp" required placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-check"></i>
+                        Verify & Login
+                    </button>
+                    
+                    <button type="button" id="resendOtp" class="btn btn-link">
+                        <i class="fas fa-redo"></i>
+                        Resend OTP
+                    </button>
+                    
+                    <button type="button" id="backToLogin" class="btn btn-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Login
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="main-section hidden">
+            <!-- User Dashboard -->
+            <div id="userDashboard" class="dashboard hidden">
+                <div class="dashboard-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Ready to learn and improve your knowledge?</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalQuizzes">0</h3>
+                            <p>Quizzes Taken</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="averageScore">0%</h3>
+                            <p>Average Score</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="weakTopicsCount">0</h3>
+                            <p>Areas to Improve</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-cards">
+                    <div class="action-card primary">
+                        <div class="card-content">
+                            <h3>Start New Quiz</h3>
+                            <p id="quizDescription">Take an adaptive quiz tailored to your learning needs</p>
+                            <div id="focusAreas" class="focus-areas hidden">
+                                <h4>Focus Areas:</h4>
+                                <div id="focusTopics" class="topic-tags"></div>
+                            </div>
+                        </div>
+                        <button id="startQuizBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i>
+                            Start Quiz
+                        </button>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="card-content">
+                            <h3>Quiz History</h3>
+                            <p>View your past quiz results and track your progress</p>
+                        </div>
+                        <button id="viewHistoryBtn" class="btn btn-secondary">
+                            <i class="fas fa-history"></i>
+                            View History
+                        </button>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="card-content">
+                            <h3>Study Recommendations</h3>
+                            <p>Get AI-powered recommendations based on your performance</p>
+                        </div>
+                        <button id="studyRecommendationsBtn" class="btn btn-secondary">
+                            <i class="fas fa-lightbulb"></i>
+                            Get Recommendations
+                        </button>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="card-content">
+                            <h3>Generate New Questions</h3>
+                            <p>Create personalized questions for your weak topics using AI</p>
+                        </div>
+                        <button id="generateQuestionsBtn" class="btn btn-accent">
+                            <i class="fas fa-robot"></i>
+                            Generate Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="dashboard hidden">
+                <div class="dashboard-header">
+                    <h2>Admin Dashboard</h2>
+                    <p>Manage users and monitor system performance</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsers">0</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeUsers">0</h3>
+                            <p>Active Users</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalQuizzesAdmin">0</h3>
+                            <p>Total Quizzes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalQuestions">0</h3>
+                            <p>Questions Available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <button id="addUserBtn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Add User
+                    </button>
+                    
+                    <button id="manageUsersBtn" class="btn btn-secondary">
+                        <i class="fas fa-users-cog"></i>
+                        Manage Users
+                    </button>
+                    
+                    <button id="viewReportsBtn" class="btn btn-secondary">
+                        <i class="fas fa-chart-bar"></i>
+                        View Reports
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quizSection" class="main-section hidden">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <div class="quiz-progress">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <span id="questionCounter">Question 1 of 24</span>
+                    </div>
+                    <div class="quiz-timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer">00:00</span>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <span id="questionTopic" class="topic-tag"></span>
+                        <button id="explainBtn" class="btn btn-outline btn-sm">
+                            <i class="fas fa-question-circle"></i>
+                            Explain
+                        </button>
+                    </div>
+                    
+                    <h3 id="questionText" class="question-text"></h3>
+                    
+                    <div id="optionsContainer" class="options-container">
+                        <!-- Options will be populated here -->
+                    </div>
+                    
+                    <div id="explanationContainer" class="explanation-container hidden">
+                        <div class="explanation-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h4>Explanation</h4>
+                        </div>
+                        <div id="explanationText" class="explanation-text"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-controls">
+                    <button id="prevBtn" class="btn btn-outline" disabled>
+                        <i class="fas fa-arrow-left"></i>
+                        Previous
+                    </button>
+                    
+                    <button id="nextBtn" class="btn btn-primary" disabled>
+                        Next
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button id="submitQuizBtn" class="btn btn-success hidden">
+                        <i class="fas fa-check"></i>
+                        Submit Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="main-section hidden">
+            <div class="results-container">
+                <div class="results-header">
+                    <div class="results-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h2>Quiz Results</h2>
+                </div>
+
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span id="finalScore">0%</span>
+                    </div>
+                    <p id="scoreMessage">Great job!</p>
+                </div>
+
+                <div class="results-details">
+                    <div class="result-stat">
+                        <span class="stat-label">Correct Answers:</span>
+                        <span id="correctAnswers">0/0</span>
+                    </div>
+                    
+                    <div class="result-stat">
+                        <span class="stat-label">Time Taken:</span>
+                        <span id="timeTaken">0:00</span>
+                    </div>
+                    
+                    <div class="result-stat">
+                        <span class="stat-label">Quiz Type:</span>
+                        <span id="quizType">Initial</span>
+                    </div>
+                </div>
+
+                <div id="topicAnalysis" class="topic-analysis">
+                    <h3>Topic-wise Performance</h3>
+                    <div id="topicsList" class="topics-list">
+                        <!-- Topic analysis will be populated here -->
+                    </div>
+                </div>
+
+                <div id="recommendations" class="recommendations">
+                    <h3>Recommendations</h3>
+                    <div id="recommendationText" class="recommendation-text"></div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="viewDetailedReport" class="btn btn-secondary">
+                        <i class="fas fa-file-alt"></i>
+                        Detailed Report
+                    </button>
+                    
+                    <button id="takeAnotherQuiz" class="btn btn-primary">
+                        <i class="fas fa-redo"></i>
+                        Take Another Quiz
+                    </button>
+                    
+                    <button id="backToDashboard" class="btn btn-outline">
+                        <i class="fas fa-home"></i>
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button id="closeModal" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <!-- Modal content will be populated here -->
+            </div>
+            <div id="modalFooter" class="modal-footer">
+                <!-- Modal footer will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container">
+        <!-- Messages will be displayed here -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/quiz.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
